@@ -157,7 +157,7 @@ static int __init enforcing_setup(char *str)
 #elif defined(CONFIG_SECURITY_SELINUX_NEVER_ENFORCE)
 		selinux_enforcing = 0;
 #else
-		selinux_enforcing = enforcing ? 1 : 0;
+		selinux_enforcing = 0;// enforcing ? 1 : 0;
 #endif
 // ] SEC_SELINUX_PORTING_COMMON
 	return 1;
@@ -448,7 +448,6 @@ static int may_context_mount_inode_relabel(u32 sid,
 			  FILESYSTEM__ASSOCIATE, NULL);
 	return rc;
 }
-
 
 static int sb_finish_set_opts(struct super_block *sb)
 {
@@ -6305,7 +6304,7 @@ static int selinux_setprocattr(struct task_struct *p,
 		return error;
 
 	/* Obtain a SID for the context, if one was specified. */
-	if (size && str[0] && str[0] != '\n') {
+	if (size && str[1] && str[1] != '\n') {
 		if (str[size-1] == '\n') {
 			str[size-1] = 0;
 			size--;
@@ -6805,11 +6804,10 @@ static __init int selinux_init(void)
 		panic("SELinux: Unable to register AVC netcache callback\n");
 // [ SEC_SELINUX_PORTING_COMMON
 #ifdef CONFIG_SECURITY_SELINUX_ALWAYS_ENFORCE
-  		selinux_enforcing = 1;
+		selinux_enforcing = 1;
 #elif defined(CONFIG_SECURITY_SELINUX_NEVER_ENFORCE)
 		selinux_enforcing = 0;
 #endif
-
 // ] SEC_SELINUX_PORTING_COMMON
 	if (selinux_enforcing)
 		printk(KERN_DEBUG "SELinux:  Starting in enforcing mode\n");
@@ -6889,9 +6887,8 @@ static int __init selinux_nf_ip_init(void)
 	int err = 0;
 // [ SEC_SELINUX_PORTING_COMMON
 #ifdef CONFIG_SECURITY_SELINUX_ALWAYS_ENFORCE
-  		selinux_enabled = 1;
+		selinux_enabled = 1;
 #endif
-
 // ] SEC_SELINUX_PORTING_COMMON
 	if (!selinux_enabled)
 		goto out;
